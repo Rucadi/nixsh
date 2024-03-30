@@ -1,0 +1,9 @@
+#!/usr/bin/nixsh 
+{PATH, TERM}:
+let
+  pkgs = (import <nixpkgs> {}).pkgs;
+in 
+''
+  ${import ./ensure-packages.nixsh { inherit PATH;  packages = with pkgs; [ bat ];}}
+  bat <<< "Hello, World!"
+''

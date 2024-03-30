@@ -1,0 +1,12 @@
+{
+  PATH,
+  nixpkgs ? import <nixpkgs> {},
+  packages,
+}:
+let
+lib = nixpkgs.pkgs.lib; 
+in
+''
+  nix-store --realise ${lib.concatStringsSep " " (map (p: "${p}") packages)} > /dev/null 2>&1
+  export PATH="${PATH}:${lib.makeSearchPathOutput "dev" "bin" packages}"
+''
