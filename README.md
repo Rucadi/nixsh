@@ -2,6 +2,11 @@
 
 NixSH tries to solve most of the common problems when using any SHELL-scripting language.
 
+# Requirements
+- bash
+- nix (or nixstatic) with experimental commands
+- jq
+
 # Do not replace bash, improve it!
 
 You don't need to replace your scripts to begin getting the benefits of using nixsh! 
