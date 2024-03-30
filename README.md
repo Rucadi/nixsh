@@ -2,6 +2,16 @@
 
 NixSH tries to solve most of the common problems when using any SHELL-scripting language.
 
+This project introduces *TWO* shell interpreters:
+
+- nixsh
+- nixshl (lite version)
+
+While nixsh is a little bit slower, this one builds a derivation and has acces to the full nixpkgs.
+
+nixshl let's you use the nix language capabilities in order to write bash scripts, including the builtin library and, if you import it, nixpkgs. 
+But it'll not build any derivation by itself, in case you want to build derivations or access nixpkgs, probably you want to use nixsh.
+
 # Requirements
 - bash
 - nix (or nixstatic) with experimental commands

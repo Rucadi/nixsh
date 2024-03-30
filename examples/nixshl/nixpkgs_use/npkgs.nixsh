@@ -1,4 +1,4 @@
-#!/usr/bin/env nixsh
+#!/usr/bin/env nixshl
 {PATH, TERM}:
 let
   pkgs = (import <nixpkgs> {}).pkgs;

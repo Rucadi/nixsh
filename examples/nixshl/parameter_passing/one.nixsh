@@ -1,4 +1,4 @@
-#!/usr/bin/env nixsh
+#!/usr/bin/env nixshl
 {PATH, TERM}:
 ''
   # This includes the two.sh script into the current script as if it was directly written here.
