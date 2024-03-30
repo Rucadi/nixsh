@@ -1,2 +1,38 @@
 #!/usr/bin/env bash
-# placeholder, will be used for extended scripts (scripts that aren't just a string expression)
+__nsh__script=""
+__nsh__interpreter=""
+if [ $# -eq 1 ]; then
+    __nsh__script=$(realpath $1)
+    __nsh__interpreter=$SHELL
+fi
+if [ $# -eq 2 ]; then
+    __nsh__script=$(realpath $2)
+    __nsh__interpreter=$(which $1)
+fi
+
+
+unset pkgs
+__nsh__FULL_ENV_VARS=$(jq -n '$ENV')
+fcontent=$(cat $__nsh__script | sed -n '1d;p')
+fcontent=${fcontent%:*}:{}
+#echo "builtins.functionArgs $fcontent"
+__nsh__ALLOWED_ENV_VARS=$(nix eval --impure --json --expr "builtins.functionArgs ($fcontent)")
+__nsh__allowed_keys=$(jq 'keys' <<< "$__nsh__ALLOWED_ENV_VARS")
+__nsh__filtered_env_vars=$(jq --argjson keys "$__nsh__allowed_keys" '. as $parent | with_entries(select(.key as $k | $keys | index($k)))' <<< "$(echo $__nsh__FULL_ENV_VARS)")
+__nsh__env_vars=$(echo "$__nsh__filtered_env_vars" | jq -r 'to_entries|map("export \(.key)=\"\(.value|tostring)\"")|.[]')
+
+
+function addTextAfterFirstOccurrence {
+    local marker=$1
+    local text_to_add=$2
+    local content=$3
+    local line_number=$(echo -e "$content" | grep -n "$marker"  | head -n 1 | cut -d ":" -f 1)
+    echo -e "$content" | sed "${line_number}s/$marker/& $text_to_add/" 
+}
+nixpkgs_with_shellbin="let pkgs = (import <nixpkgs> {}).pkgs; in pkgs.writeShellScriptBin ''nixshe'' \n"
+modified_expr=$(addTextAfterFirstOccurrence ':' "$nixpkgs_with_shellbin" "($(cat $__nsh__script |sed '1d') ) (builtins.fromJSON(''$__nsh__filtered_env_vars''))")
+
+drv=$(nix-instantiate -E "$(echo -e "$modified_expr")" 2>/dev/null)
+shpth=$(nix-store --realise "$drv" 2>/dev/null )/bin/nixshe
+echo $shpth
+exec env -i "$__nsh__interpreter" <(echo -e "$__nsh__env_vars" &&  cat "$shpth")
