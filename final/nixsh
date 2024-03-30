@@ -20,7 +20,6 @@ getInputs() {
     inst=${inst#*(}
     # get sanitized inputs a list of space-separated strings
     echo ${inst%%:*}  | sed -e 's|\?[^,}]*[},]||g' | sed -e 's|{||' | sed -e 's|,||' | sed -e 's|}||' | xargs 
-
 }
 
 getAttrEnv()
