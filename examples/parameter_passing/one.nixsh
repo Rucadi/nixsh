@@ -1,4 +1,4 @@
-#!/usr/bin/nixsh 
+#!/usr/bin/env nixsh
 {PATH, TERM}:
 ''
   # This includes the two.sh script into the current script as if it was directly written here.
@@ -7,5 +7,9 @@
   # This will call nixsh with the env var PARAM, which will be passed to the script.
   # If param is not set, two.nixsh will use the default value or in this case, fail.
   PARAM="Hello from dynamic call to nixsh!" ${./two.nixsh}
+
+
+  T=$(${import ./two.nixsh {inherit PATH TERM; PARAM="Hello From Another Script!";}})
+  echo "Obviously I can also get the result: "$T""
 
 ''

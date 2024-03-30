@@ -11,12 +11,12 @@ let
             let
               lib=pkgs.lib;
             in
-            pkgs.writeShellScript "nixshe-wrapper"
+            pkgs.writeShellScript "nixsh-wrapper"
             ''
               unset $(env | ${pkgs.gawk}/bin/awk -F= '{print $1}')
               ${lib.concatStringsSep "\n" (lib.mapAttrsToList (key: value: ''export ${key}='${value}' '') ENV)}
               export SHELL=${SHELL}
-              exec ${SHELL} ${pkgs.writeShellScript "nixshe_script" script}
+              exec ${SHELL} ${pkgs.writeShellScript "nixsh_script" script}
             '';
 in 
 {

@@ -1,9 +1,11 @@
-#!/usr/bin/nixsh 
+#!/usr/bin/env nixsh
 {PATH, TERM}:
 let
   pkgs = (import <nixpkgs> {}).pkgs;
 in 
 ''
+  # When using nixshl you can obviously call wathever you want, including other nix packages :) 
+  # When using nixshl, the derivations are not instantiated, so you need to do it manually
   ${import ./ensure-packages.nixsh { inherit PATH;  packages = with pkgs; [ bat ];}}
   bat <<< "Hello, World!"
 ''

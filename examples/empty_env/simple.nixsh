@@ -1,4 +1,4 @@
-#!/usr/bin/nixsh
+#!/usr/bin/env nixsh
 {}:
 ''
 env

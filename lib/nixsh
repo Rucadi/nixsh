@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+read -d '' awkScript << 'EOF'
+BEGIN {
+    depth = 0
+    inside_let = 0
+    inside_in = 0
+}
+
+{
+    for (i=1; i<=NF; i++) {
+        if ($i == "let") {
+            depth++
+            if (depth == 1) {
+                inside_let = 1
+                output = NR-1
+            }
+        }
+
+        if ($i == "in") {
+            if (depth == 1) {
+                inside_in = 1
+            }
+            depth--
+            
+            if (depth == 0 && inside_let && inside_in) {
+                print NR+1
+                inside_let = 0
+                inside_in = 0
+            }
+        }
+    }
+}
+EOF
+
+
+__nsh__script=""
+__nsh__interpreter=""
+if [ $# -eq 1 ]; then
+    __nsh__script=$(realpath $1)
+    __nsh__interpreter=$SHELL
+fi
+if [ $# -eq 2 ]; then
+    __nsh__script=$(realpath $2)
+    __nsh__interpreter=$(which $1)
+fi
+
+
+getInputs() {
+    #script removing first line 
+    script=$(cat $1 | sed '1d')
+    inst=$(nix-instantiate --parse -E "${script%%:*}:{}")
+    inst=${inst%%:*}
+    inst=${inst#*(}
+    # get sanitized inputs a list of space-separated strings
+    echo ${inst%%:*}  | sed -e 's|\?[^,}]*[},]||g' | sed -e 's|{||' | sed -e 's|,||' | sed -e 's|}||' | xargs 
+}
+
+getAttrEnv()
+{
+    getInputs "$1" | sed 's/\([^ ]\+\)/\1=\1;/g'
+}
+
+
+ARGS=()
+nixsh_in_inputs=false
+inputs=$(getInputs $__nsh__script)
+for i in $inputs; do
+
+    value=$(printenv $i)
+    if [ "$i" == "nixsh" ]; then
+        nixsh_in_inputs=true
+        continue
+    fi
+    if [ -n "$value" ]; then
+        ARGS+=("--argstr")
+        ARGS+=("$i")
+        ARGS+=("$value")
+    fi
+done
+
+line_to_add_expr=$(awk "$awkScript" $__nsh__script)
+#if line to add expr is empty, search for the first occurence of : and put in line_to_add_Expr the line number
+if [ "$line_to_add_expr" == "" ]; then
+    line_to_add_expr=$(( $(grep -n ":" $__nsh__script | head -n 1 | cut -d: -f1) +1 ))
+fi
+comma=","
+if [ "$inputs" == "" ]; then 
+    comma=""
+fi
+
+
+if [ $nixsh_in_inputs == false ]; then
+    nix_expr="$(cat $__nsh__script | sed "1,/{/s/{/{ nixsh$comma /")"
+else
+    nix_expr="$(cat $__nsh__script)"
+fi
+
+
+nix_expr="$(echo -e "$nix_expr" | sed  "${line_to_add_expr}i\nixsh.wrapper {$(getAttrEnv $__nsh__script)} ''$__nsh__interpreter''  \\")"
+
+if script=$(nix-build "${ARGS[@]}" --arg nixsh "import $0.nix {}"  --no-out-link -E "$nix_expr"  2>&1); then
+    # get the last line of script
+    script=$(echo "$script" | tail -n 1)
+else
+    rc=$?
+    echo -e "$script" >&2
+    echo -e "Error: nix-build command failed with exit code $rc. Exiting." >&2
+    exit 1
+fi
+
+# Check if nix-build command failed
+if [ $? -ne 0 ]; then
+    echo "Error: nix-build command failed. Exiting." >&2
+    exit 1
+fi
+exec $script
+

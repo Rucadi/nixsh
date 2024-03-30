@@ -1,0 +1,6 @@
+#!/usr/bin/env nixsh
+{PATH, TERM}:
+''
+  echo "Hello, world!" | ${nixsh.pkgs.cowsay}/bin/cowsay
+  ${nixsh.pkgs.figlet}/bin/figlet "Hello, world!"
+''

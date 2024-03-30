@@ -1,4 +1,4 @@
-#!/usr/bin/nixsh 
+#!/usr/bin/env nixsh
 {PATH, TERM, PARAM}: 
 ''
   echo "I like to receive params :) Received: ${PARAM}"
