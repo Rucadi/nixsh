@@ -52,7 +52,7 @@ getInputs() {
     inst=${inst%%:*}
     inst=${inst#*(}
     # get sanitized inputs a list of space-separated strings
-    echo ${inst%%:*}  | sed -e 's|\?[^,}]*[},]||g' | sed -e 's|{||' | sed -e 's|,||' | sed -e 's|}||' | xargs 
+    echo ${inst%%:*}  | sed -e 's|\?[^,}]*[},]||g' | sed -e 's|{||g' | sed -e 's|,||g' | sed -e 's|}||g' | xargs 
 }
 
 getAttrEnv()
@@ -95,8 +95,7 @@ else
     nix_expr="$(cat $__nsh__script)"
 fi
 
-
-nix_expr="$(echo -e "$nix_expr" | sed  "${line_to_add_expr}i\nixsh.wrapper {$(getAttrEnv $__nsh__script)} ''$__nsh__interpreter''  \\")"
+nix_expr="$(echo "$nix_expr" | sed  "${line_to_add_expr}i\nixsh.wrapper {$(getAttrEnv $__nsh__script)} ''$__nsh__interpreter''  \\")"
 
 if script=$(nix-build "${ARGS[@]}" --arg nixsh "import $0.nix {}"  --no-out-link -E "$nix_expr"  2>&1); then
     # get the last line of script
