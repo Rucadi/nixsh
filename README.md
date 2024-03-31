@@ -7,11 +7,10 @@ NixSH aims to address common challenges encountered when using any SHELL-scripti
 
 `nixsh` is slightly slower as it builds a derivation and has access to the full nixpkgs. On the other hand, `nixshl` allows you to leverage the nix language capabilities to write bash scripts, including the built-in library and, if imported, nixpkgs. However, it does not build any derivation by itself. If you need to build derivations or access nixpkgs, you should use `nixsh`.
 
-# Prerequisites
-- Bash
-- Nix (or nixstatic) with experimental commands
-- jq
+# Quickstart
+```nix develop github:rucadi/nixsh```
 
+And test any of the examples in the examples folder :)
 # Enhance Bash, Don't Replace It!
 
 There's no need to replace your existing scripts to start benefiting from nixsh! You can start by incrementally replacing your bash scripts, and you'll see improvements even on the scripts that remain unchanged!
