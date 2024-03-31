@@ -1,4 +1,4 @@
-#!/usr/bin/env -S nixsh /usr/bin/python3
+#!/usr/bin/env -S nixsh python3
 {}:
 let 
   Hello = "Hello World!";
