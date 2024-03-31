@@ -60,7 +60,7 @@ With NixSH, you can pass the interpreter in the shebang declaration, the resulti
 Notice that it shares the same ENV principle, only the ENV variables specified are being inherited.
 
 ```python
-#!/usr/bin/env -S nixsh /usr/bin/python3
+#!/usr/bin/env -S nixsh python3
 {}:
 let 
   Hello = "Hello World!";
