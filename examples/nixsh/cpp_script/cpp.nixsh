@@ -1,5 +1,5 @@
 #!/usr/bin/env nixsh
-{PATH}:
+{PATH, TERM}:
 let 
   myCppScript =
 
@@ -19,5 +19,5 @@ let
         }'';
 in
 ''
-  ${myCppScript}
+  ${myCppScript} | ${nixsh.pkgs.bat}/bin/bat
 ''
