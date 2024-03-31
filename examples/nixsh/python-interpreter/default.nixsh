@@ -1,6 +1,10 @@
 #!/usr/bin/env -S nixsh /usr/bin/python3
-{PATH, TERM}:
+{}:
+let 
+  Hello = "Hello World!";
+in
 ''
   import os
-  print("os.environ['PATH'] = ", os.environ['PATH'])
+  print(os.environ)
+  print("${Hello}")
 ''
