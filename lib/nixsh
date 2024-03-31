@@ -28,6 +28,10 @@ BEGIN {
                 inside_in = 0
             }
         }
+
+        if ($i == "#") {  # Check for '#'
+            next          # Skip parsing until the next line
+        }
     }
 }
 EOF
@@ -95,11 +99,11 @@ else
     nix_expr="$(cat $__nsh__script)"
 fi
 
-nix_expr="$(echo "$nix_expr" | sed  "${line_to_add_expr}i\nixsh.wrapper {$(getAttrEnv $__nsh__script)} ''$__nsh__interpreter''  \\")"
+nix_expr="$(echo -e "$nix_expr" | sed  "${line_to_add_expr}i\nixsh.wrapper {$(getAttrEnv $__nsh__script)} ''$__nsh__interpreter''  \\")"
 
 if script=$(nix-build "${ARGS[@]}" --arg nixsh "import $0.nix {}"  --no-out-link -E "$nix_expr"  2>&1); then
     # get the last line of script
-    script=$(echo "$script" | tail -n 1)
+    script=$(echo -e "$script" | tail -n 1)
 else
     rc=$?
     echo -e "$script" >&2
