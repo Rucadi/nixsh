@@ -16,7 +16,7 @@ let
               unset $(env | ${pkgs.gawk}/bin/awk -F= '{print $1}')
               ${lib.concatStringsSep "\n" (lib.mapAttrsToList (key: value: ''export ${key}='${value}' '') ENV)}
               export SHELL=${SHELL}
-              exec ${SHELL} ${pkgs.writeShellScript "nixsh_script" script}
+              exec ${SHELL} ${pkgs.writeScriptBin  "nixsh_script" script}/bin/nixsh_script
             '';
 
   cpp = rec {
