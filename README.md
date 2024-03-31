@@ -53,6 +53,7 @@ ${nixsh.pkgs.cowsay}/bin/cowsay Mooooo
 ```
 
 
+
 # Not-Only-Bash, Run any interpreter including python!
 
 With NixSH, you can pass the interpreter in the shebang declaration, the resulting expression will be passed directly to the interpreter.
@@ -70,6 +71,20 @@ in
   print("${Hello}")
 ''
 ```
+
+
+# Nixsh library
+
+As you have seen, we are using "nixsh" in some of the script without declaring it anywhere!
+
+Actually, this dependency is injected into the nix expression while running nixsh and declaring it is optional.
+
+"nixsh" allows us to acess nixpkgs packages using "nixsh.pkgs", but also has some utilities (WIP) that can be used to 
+make writting scripts easier.
+
+
+For example, easier C++ scripting as we can see next with nixsh.cpp.compile
+
 
 # C++ (or any language) for scripting?!
 
