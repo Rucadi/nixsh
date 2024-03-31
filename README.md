@@ -42,12 +42,14 @@ echo "${TERM}"
 ```
 
 Or you can even set default values if a envar does not exists!
+Did you know that you can also use nixpkgs directly?
 
 ```bash
 #!/usr/bin/env nixsh
 {PATH, TERM ? "unkown"}:
 ''
 echo "${TERM}"
+${nixsh.pkgs.cowsay}/bin/cowsay Mooooo
 ''
 ```
 
