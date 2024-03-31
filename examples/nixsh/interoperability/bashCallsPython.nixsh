@@ -1,0 +1,11 @@
+#!/usr/bin/env nixsh
+{PATH}:
+''
+# Execution Time check that the parameters are passed correctly
+# Compile-time check that python.nixsh exists
+PARAM1=288 ${./python.nixsh}
+
+# "Compile" Time check that the parameters are passed correctly
+${nixsh.python.call ./python.nixsh {PARAM1="288";}}
+
+''

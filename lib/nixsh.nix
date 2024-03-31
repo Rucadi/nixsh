@@ -7,6 +7,8 @@ let
   pkgs = nixpkgs.pkgs;
   lib = nixpkgs.lib;
 
+  defaultPython = "${pkgs.python3}/bin/python3";
+
   wrapper = ENV: SHELL: script:
             let
               lib=pkgs.lib;
@@ -18,6 +20,11 @@ let
               export SHELL=${SHELL}
               exec ${SHELL} ${pkgs.writeScriptBin  "nixsh_script" script}/bin/nixsh_script
             '';
+
+  python = rec {
+    callWithPython = path: ENV: python: wrapper ENV python (import path ({}//ENV));
+    call = path: ENV: callWithPython path ENV defaultPython;
+  };
 
   cpp = rec {
     compileWithCmd = compile-command: source: pkgs.stdenv.mkDerivation rec {
@@ -39,5 +46,6 @@ in
   inherit lib;
   inherit wrapper;
   inherit cpp;
+  inherit python;
 
 }  // modulesImports

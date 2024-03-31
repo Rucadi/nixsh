@@ -1,0 +1,5 @@
+#!/usr/bin/env -S nixsh /usr/bin/python3
+{PARAM1 ? ""}:
+''
+  print("Hello From Python PARAM1 is: ${PARAM1}")
+''
