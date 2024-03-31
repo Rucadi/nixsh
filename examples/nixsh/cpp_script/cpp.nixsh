@@ -1,0 +1,23 @@
+#!/usr/bin/env nixsh
+{PATH}:
+let 
+  myCppScript =
+
+    # This only pays the penalty the first time it is compiled. If nothing changes in the environment, the binary is cached.
+    nixsh.cpp.compile ''
+        #include <iostream>
+        #include <string>
+        #include <sstream>
+        int main() {
+
+          std::istringstream iss("${PATH}");
+          std::string token;
+          while (std::getline(iss, token, ':')) {
+            std::cout<<token<<std::endl;
+          }
+          return 0;
+        }'';
+in
+''
+  ${myCppScript}
+''

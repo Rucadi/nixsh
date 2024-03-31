@@ -18,10 +18,26 @@ let
               export SHELL=${SHELL}
               exec ${SHELL} ${pkgs.writeShellScript "nixsh_script" script}
             '';
+
+  cpp = rec {
+    compileWithCmd = compile-command: source: pkgs.stdenv.mkDerivation rec {
+      name = "nixsh-cpp-script";
+      pname = "cpp-script";
+      version = "0.1";
+      dontUnpack = true;
+      src = pkgs.writeText "main.cpp" source;
+      buildPhase = ''
+        ${compile-command} ${src} -o $out
+      '';
+    }; 
+    compile = source: compileWithCmd "g++ -std=c++23 -O3" source; 
+
+  };
 in 
 {
   inherit pkgs;
   inherit lib;
   inherit wrapper;
+  inherit cpp;
 
 }  // modulesImports
